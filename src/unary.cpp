@@ -21,48 +21,35 @@
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "unary.h"
 
+UnaryEnergy::~UnaryEnergy() {}
+VectorXf UnaryEnergy::parameters() const { return VectorXf(); }
+void UnaryEnergy::setParameters(const VectorXf& v) {}
+VectorXf UnaryEnergy::gradient(const MatrixXf& b) const { return VectorXf(); }
 
-UnaryEnergy::~UnaryEnergy() {
-}
-VectorXf UnaryEnergy::parameters() const {
-	return VectorXf();
-}
-void UnaryEnergy::setParameters( const VectorXf & v ) {
-}
-VectorXf UnaryEnergy::gradient( const MatrixXf & b ) const {
-	return VectorXf();
-}
+ConstUnaryEnergy::ConstUnaryEnergy(const MatrixXf& u) : unary_(u) {}
+MatrixXf ConstUnaryEnergy::get() const { return unary_; }
 
-
-ConstUnaryEnergy::ConstUnaryEnergy( const MatrixXf & u ):unary_(u) {
-}
-MatrixXf ConstUnaryEnergy::get() const {
-	return unary_;
-}
-
-LogisticUnaryEnergy::LogisticUnaryEnergy( const MatrixXf & L, const MatrixXf & f ):L_(L),f_(f) {
-}
-MatrixXf LogisticUnaryEnergy::get() const {
-	return L_*f_;
-}
+LogisticUnaryEnergy::LogisticUnaryEnergy(const MatrixXf& L, const MatrixXf& f)
+    : L_(L), f_(f) {}
+MatrixXf LogisticUnaryEnergy::get() const { return L_ * f_; }
 VectorXf LogisticUnaryEnergy::parameters() const {
-	MatrixXf l = L_;
-	l.resize( l.cols()*l.rows(), 1 );
-	return l;
+  MatrixXf l = L_;
+  l.resize(l.cols() * l.rows(), 1);
+  return l;
 }
-void LogisticUnaryEnergy::setParameters( const VectorXf & v ) {
-	assert( v.rows() == L_.cols()*L_.rows() );
-	MatrixXf l = v;
-	l.resizeLike( L_ );
-	L_ = l;
+void LogisticUnaryEnergy::setParameters(const VectorXf& v) {
+  assert(v.rows() == L_.cols() * L_.rows());
+  MatrixXf l = v;
+  l.resizeLike(L_);
+  L_ = l;
 }
-VectorXf LogisticUnaryEnergy::gradient( const MatrixXf & b ) const {
-	MatrixXf g = b*f_.transpose();
-	g.resize( g.cols()*g.rows(), 1 );
-	return g;
+VectorXf LogisticUnaryEnergy::gradient(const MatrixXf& b) const {
+  MatrixXf g = b * f_.transpose();
+  g.resize(g.cols() * g.rows(), 1);
+  return g;
 }

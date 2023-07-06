@@ -21,55 +21,57 @@
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "pairwise.h"
-#include "optimization.h"
 #include <iostream>
+
+#include "optimization.h"
+#include "pairwise.h"
 
 // This class simply tests the gradient computation on the pairwise term
 
-class PairwiseEnergy: public EnergyFunction {
-protected:
-	PairwisePotential p_;
-	MatrixXf v0_, v1_;
-public:
-	PairwiseEnergy( const MatrixXf & f, const MatrixXf & v0, const MatrixXf & v1 ):p_( f, new PottsCompatibility(), DIAG_KERNEL, NORMALIZE_SYMMETRIC ),v0_(v0),v1_(v1) {
-	}
-	virtual VectorXf initialValue() {
-		return p_.kernelParameters();
-	}
-	virtual void setInitialValue( const VectorXf & v ) {
-		p_.setKernelParameters( v );
-	}
-	virtual double gradient( const VectorXf & x, VectorXf & dx ) {//NORMALIZE_SYMMETRIC
-		p_.setKernelParameters( x );
-		dx = p_.kernelGradient( v0_, v1_ );
-		MatrixXf tmp = 0*v1_;
-		p_.apply( tmp, v1_ );
-		return (tmp.array()*v0_.array()).sum();
-	}
+class PairwiseEnergy : public EnergyFunction {
+ protected:
+  PairwisePotential p_;
+  MatrixXf v0_, v1_;
+
+ public:
+  PairwiseEnergy(const MatrixXf& f, const MatrixXf& v0, const MatrixXf& v1)
+      : p_(f, new PottsCompatibility(), DIAG_KERNEL, NORMALIZE_SYMMETRIC),
+        v0_(v0),
+        v1_(v1) {}
+  virtual VectorXf initialValue() { return p_.kernelParameters(); }
+  virtual void setInitialValue(const VectorXf& v) { p_.setKernelParameters(v); }
+  virtual double gradient(const VectorXf& x,
+                          VectorXf& dx) {  // NORMALIZE_SYMMETRIC
+    p_.setKernelParameters(x);
+    dx = p_.kernelGradient(v0_, v1_);
+    MatrixXf tmp = 0 * v1_;
+    p_.apply(tmp, v1_);
+    return (tmp.array() * v0_.array()).sum();
+  }
 };
 
 int main() {
-	int N = 1000, M = 4, d = 2;
-	MatrixXf f = 0.3*MatrixXf::Random( d, N );
-	MatrixXf a = MatrixXf::Random( M, N ), b = MatrixXf::Random( M, N );
-	PairwiseEnergy e( f.array(), a, a );
-	
-	VectorXf p = e.initialValue();
-// 	p = VectorXf::Random( p.rows() );
-	VectorXf g = p;
-	std::cout<<"start = "<<e.gradient( p, g )<<std::endl;
-// 	std::cout<<p.transpose()<<std::endl;
-	p = minimizeLBFGS( e, 5, 1 );
-	std::cout<<"E =  "<<e.gradient( p, g )<<"   "<<gradCheck( e, p, 1e-2 )<<"   "<<p.transpose()<<std::endl;
-	std::cout<<"g  = "<<g.transpose()<<std::endl;
-	std::cout<<"ng = "<<numericGradient( e, p ).transpose()<<std::endl;
-	std::cout<<"ng = "<<numericGradient( e, p, 1e-2 ).transpose()<<std::endl;
-// 	int id;
-// 	VectorXf dg = g.transpose()-numericGradient( e, p );
-// 	dg.array().abs().maxCoeff( &id );
-// 	std::cout<<computeFunction( e, p-g, 0.02*g ).transpose()<<std::endl;
+  int N = 1000, M = 4, d = 2;
+  MatrixXf f = 0.3 * MatrixXf::Random(d, N);
+  MatrixXf a = MatrixXf::Random(M, N), b = MatrixXf::Random(M, N);
+  PairwiseEnergy e(f.array(), a, a);
+
+  VectorXf p = e.initialValue();
+  //    p = VectorXf::Random( p.rows() );
+  VectorXf g = p;
+  std::cout << "start = " << e.gradient(p, g) << std::endl;
+  //    std::cout<<p.transpose()<<std::endl;
+  p = minimizeLBFGS(e, 5, 1);
+  std::cout << "E =  " << e.gradient(p, g) << "   " << gradCheck(e, p, 1e-2)
+            << "   " << p.transpose() << std::endl;
+  std::cout << "g  = " << g.transpose() << std::endl;
+  std::cout << "ng = " << numericGradient(e, p).transpose() << std::endl;
+  std::cout << "ng = " << numericGradient(e, p, 1e-2).transpose() << std::endl;
+  //    int id;
+  //    VectorXf dg = g.transpose()-numericGradient( e, p );
+  //    dg.array().abs().maxCoeff( &id );
+  //    std::cout<<computeFunction( e, p-g, 0.02*g ).transpose()<<std::endl;
 }

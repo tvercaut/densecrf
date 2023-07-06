@@ -21,30 +21,31 @@
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "util.h"
+
 #include <cstring>
 
 float* allocate(size_t N) {
-	float * r = NULL;
-	if (N>0)
+  float* r = NULL;
+  if (N > 0)
 #ifdef SSE_DENSE_CRF
-		r = (float*)_mm_malloc( N*sizeof(float)+16, 16 );
+    r = (float*)_mm_malloc(N * sizeof(float) + 16, 16);
 #else
-		r = new float[N];
+    r = new float[N];
 #endif
-	memset( r, 0, sizeof(float)*N);
-	return r;
+  memset(r, 0, sizeof(float) * N);
+  return r;
 }
 void deallocate(float*& ptr) {
-	if (ptr)
+  if (ptr)
 #ifdef SSE_DENSE_CRF
-		_mm_free( ptr );
+    _mm_free(ptr);
 #else
-		delete[] ptr;
+    delete[] ptr;
 #endif
-	ptr = NULL;
+  ptr = NULL;
 }

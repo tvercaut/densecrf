@@ -21,8 +21,8 @@
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
@@ -31,14 +31,14 @@
 #include "permutohedral.h"
 
 #ifdef __SSE__
-# define SSE_DENSE_CRF
+#define SSE_DENSE_CRF
 #endif
 
 #if defined(SSE_DENSE_CRF)
-# include <emmintrin.h>
-# include <xmmintrin.h>
+#include <emmintrin.h>
+#include <xmmintrin.h>
 #endif
 
 // Memory handling switches between SSE and new
-float* allocate ( size_t N ) ;
-void deallocate ( float *& ptr ) ;
+float* allocate(size_t N);
+void deallocate(float*& ptr);
