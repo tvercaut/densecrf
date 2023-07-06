@@ -43,7 +43,7 @@ class ConstUnaryEnergy : public UnaryEnergy {
   MatrixXf unary_;
 
  public:
-  ConstUnaryEnergy(const MatrixXf& unary);
+  explicit ConstUnaryEnergy(const MatrixXf& unary);
   virtual MatrixXf get() const;
 };
 class LogisticUnaryEnergy : public UnaryEnergy {

@@ -33,7 +33,7 @@ float* allocate(size_t N) {
   float* r = NULL;
   if (N > 0)
 #ifdef SSE_DENSE_CRF
-    r = (float*)_mm_malloc(N * sizeof(float) + 16, 16);
+    r = reinterpret_cast<float*>(_mm_malloc(N * sizeof(float) + 16, 16));
 #else
     r = new float[N];
 #endif

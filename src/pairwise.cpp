@@ -58,23 +58,26 @@ class DenseKernel : public Kernel {
     // Read in the values
     if (ntype_ == NORMALIZE_SYMMETRIC ||
         (ntype_ == NORMALIZE_BEFORE && !transpose) ||
-        (ntype_ == NORMALIZE_AFTER && transpose))
+        (ntype_ == NORMALIZE_AFTER && transpose)) {
       out = in * norm_.asDiagonal();
-    else
+    } else {
       out = in;
+    }
 
     // Filter
-    if (transpose)
+    if (transpose) {
       lattice_.compute(out, out, true);
-    else
+    } else {
       lattice_.compute(out, out);
-    //          lattice_.compute( out.data(), out.data(), out.rows() );
+      // lattice_.compute( out.data(), out.data(), out.rows() );
+    }
 
     // Normalize again
     if (ntype_ == NORMALIZE_SYMMETRIC ||
         (ntype_ == NORMALIZE_BEFORE && transpose) ||
-        (ntype_ == NORMALIZE_AFTER && !transpose))
+        (ntype_ == NORMALIZE_AFTER && !transpose)) {
       out = out * norm_.asDiagonal();
+    }
   }
   // Compute d/df a^T*K*b
   MatrixXf kernelGradient(const MatrixXf& a, const MatrixXf& b) const {
@@ -83,9 +86,9 @@ class DenseKernel : public Kernel {
     return g;
   }
   MatrixXf featureGradient(const MatrixXf& a, const MatrixXf& b) const {
-    if (ntype_ == NO_NORMALIZATION)
+    if (ntype_ == NO_NORMALIZATION) {
       return kernelGradient(a, b);
-    else if (ntype_ == NORMALIZE_SYMMETRIC) {
+    } else if (ntype_ == NORMALIZE_SYMMETRIC) {
       MatrixXf fa = lattice_.compute(a * norm_.asDiagonal(), true);
       MatrixXf fb = lattice_.compute(b * norm_.asDiagonal());
       MatrixXf ones = MatrixXf::Ones(a.rows(), a.cols());
@@ -131,11 +134,11 @@ class DenseKernel : public Kernel {
     filter(out, Q, true);
   }
   virtual VectorXf parameters() const {
-    if (ktype_ == CONST_KERNEL)
+    if (ktype_ == CONST_KERNEL) {
       return VectorXf();
-    else if (ktype_ == DIAG_KERNEL)
+    } else if (ktype_ == DIAG_KERNEL) {
       return parameters_;
-    else {
+    } else {
       MatrixXf p = parameters_;
       p.resize(p.cols() * p.rows(), 1);
       return p;
@@ -155,9 +158,9 @@ class DenseKernel : public Kernel {
   virtual VectorXf gradient(const MatrixXf& a, const MatrixXf& b) const {
     if (ktype_ == CONST_KERNEL) return VectorXf();
     MatrixXf fg = featureGradient(a, b);
-    if (ktype_ == DIAG_KERNEL)
+    if (ktype_ == DIAG_KERNEL) {
       return (f_.array() * fg.array()).rowwise().sum();
-    else {
+    } else {
       MatrixXf p = fg * f_.transpose();
       p.resize(p.cols() * p.rows(), 1);
       return p;

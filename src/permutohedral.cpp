@@ -66,8 +66,8 @@ class HashTable {
       if (old_table[i] >= 0) {
         int e = old_table[i];
         size_t h = hash(getKey(e)) % capacity_;
-        for (; table_[h] >= 0; h = h < capacity_ - 1 ? h + 1 : 0)
-          ;
+        for (; table_[h] >= 0; h = h < capacity_ - 1 ? h + 1 : 0) {
+        }
         table_[h] = e;
       }
   }
@@ -105,8 +105,9 @@ class HashTable {
           for (size_t i = 0; i < key_size_; i++)
             keys_[filled_ * key_size_ + i] = k[i];
           return table_[h] = filled_++;
-        } else
+        } else {
           return -1;
+        }
       }
       // Check if the current key is The One
       bool good = true;
@@ -148,11 +149,15 @@ void Permutohedral::init(const MatrixXf& feature) {
   rank_.resize((d_ + 1) * (N_ + 16));
 
   // Allocate the local memory
-  __m128* scale_factor = (__m128*)_mm_malloc((d_) * sizeof(__m128), 16);
-  __m128* f = (__m128*)_mm_malloc((d_) * sizeof(__m128), 16);
-  __m128* elevated = (__m128*)_mm_malloc((d_ + 1) * sizeof(__m128), 16);
-  __m128* rem0 = (__m128*)_mm_malloc((d_ + 1) * sizeof(__m128), 16);
-  __m128* rank = (__m128*)_mm_malloc((d_ + 1) * sizeof(__m128), 16);
+  __m128* scale_factor =
+      reinterpret_cast<__m128*>(_mm_malloc((d_) * sizeof(__m128), 16));
+  __m128* f = reinterpret_cast<__m128*>(_mm_malloc((d_) * sizeof(__m128), 16));
+  __m128* elevated =
+      reinterpret_cast<__m128*>(_mm_malloc((d_ + 1) * sizeof(__m128), 16));
+  __m128* rem0 =
+      reinterpret_cast<__m128*>(_mm_malloc((d_ + 1) * sizeof(__m128), 16));
+  __m128* rank =
+      reinterpret_cast<__m128*>(_mm_malloc((d_ + 1) * sizeof(__m128), 16));
   float* barycentric = new float[(d_ + 2) * blocksize];
   short* canonical = new short[(d_ + 1) * (d_ + 1)];
   short* key = new short[d_ + 1];
@@ -179,7 +184,7 @@ void Permutohedral::init(const MatrixXf& feature) {
   // Compute the simplex each feature lies in
   for (int k = 0; k < N_; k += blocksize) {
     // Load the feature from memory
-    float* ff = (float*)f;
+    float* ff = reinterpret_cast<float*>(f);
     for (int j = 0; j < d_; j++)
       for (int i = 0; i < blocksize; i++)
         ff[j * blocksize + i] = k + i < N_ ? feature(j, k + i) : 0.0;
@@ -236,8 +241,8 @@ void Permutohedral::init(const MatrixXf& feature) {
       __m128 v = (elevated[i] - rem0[i]) * invdplus1;
 
       // Didn't figure out how to SSE this
-      float* fv = (float*)&v;
-      float* frank = (float*)&rank[i];
+      float* fv = reinterpret_cast<float*>(&v);
+      float* frank = reinterpret_cast<float*>(&rank[i]);
       for (int j = 0; j < blocksize; j++) {
         int p = d_ - frank[j];
         barycentric[j * (d_ + 2) + p] += fv[j];
@@ -250,14 +255,15 @@ void Permutohedral::init(const MatrixXf& feature) {
       // Wrap around
       barycentric[j * (d_ + 2) + 0] += 1 + barycentric[j * (d_ + 2) + d_ + 1];
 
-      float* frank = (float*)rank;
-      float* frem0 = (float*)rem0;
+      float* frank = reinterpret_cast<float*>(rank);
+      float* frem0 = reinterpret_cast<float*>(rem0);
       // Compute all vertices and their offset
       for (int remainder = 0; remainder <= d_; remainder++) {
         for (int i = 0; i < d_; i++) {
           key[i] =
               frem0[i * blocksize + j] +
-              canonical[remainder * (d_ + 1) + (int)frank[i * blocksize + j]];
+            canonical[remainder * (d_ + 1)
+                      + static_cast<int>(frank[i * blocksize + j]]);
         }
         offset_[(j + k) * (d_ + 1) + remainder] = hash_table.find(key, true);
         rank_[(j + k) * (d_ + 1) + remainder] =
@@ -343,8 +349,10 @@ void Permutohedral::init(const MatrixXf& feature) {
   // Expected standard deviation of our filter (p.6 in [Adams etal 2010])
   float inv_std_dev = sqrt(2.0 / 3.0) * (d_ + 1);
   // Compute the diagonal part of E (p.5 in [Adams etal 2010])
-  for (int i = 0; i < d_; i++)
-    scale_factor[i] = 1.0 / sqrt(double((i + 2) * (i + 1))) * inv_std_dev;
+  for (int i = 0; i < d_; i++) {
+    scale_factor[i] =
+        1.0 / sqrt(static_cast<double>(((i + 2) * (i + 1)))) * inv_std_dev;
+  }
 
   // Compute the simplex each feature lies in
   for (int k = 0; k < N_; k++) {
@@ -519,11 +527,12 @@ void Permutohedral::sseCompute(float* out, const float* in, int value_size,
   const int sse_value_size =
       (value_size - 1) * sizeof(float) / sizeof(__m128) + 1;
   // Shift all values by 1 such that -1 -> 0 (used for blurring)
-  __m128* sse_val = (__m128*)_mm_malloc(sse_value_size * sizeof(__m128), 16);
-  __m128* values =
-      (__m128*)_mm_malloc((M_ + 2) * sse_value_size * sizeof(__m128), 16);
-  __m128* new_values =
-      (__m128*)_mm_malloc((M_ + 2) * sse_value_size * sizeof(__m128), 16);
+  __m128* sse_val = reinterpret_cast<__m128*>(
+      _mm_malloc(sse_value_size * sizeof(__m128), 16));
+  __m128* values = reinterpret_cast<__m128*>(
+      _mm_malloc((M_ + 2) * sse_value_size * sizeof(__m128), 16));
+  __m128* new_values = reinterpret_cast<__m128*>(
+      _mm_malloc((M_ + 2) * sse_value_size * sizeof(__m128), 16));
 
   __m128 Zero = _mm_set1_ps(0);
 
@@ -609,8 +618,10 @@ void Permutohedral::gradient(float* df, const float* a, const float* b,
   // Initialize some constants
   std::vector<float> scale_factor(d_);
   float inv_std_dev = sqrt(2.0 / 3.0) * (d_ + 1);
-  for (int i = 0; i < d_; i++)
-    scale_factor[i] = 1.0 / sqrt(double((i + 2) * (i + 1))) * inv_std_dev;
+  for (int i = 0; i < d_; i++) {
+    scale_factor[i] =
+        1.0 / sqrt(static_cast<double>((i + 2) * (i + 1))) * inv_std_dev;
+  }
 
   // Alpha is a magic scaling constant multiplied by down_factor
   float alpha = 1.0f / (1 + powf(2, -d_)) / (d_ + 1);

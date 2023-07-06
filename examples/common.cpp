@@ -55,13 +55,14 @@ VectorXs getLabeling(const unsigned char* im, int N, int M) {
     // Map the color to a label
     int c = getColor(im + 3 * k);
     int i;
-    for (i = 0; i < nColors && c != colors[i]; i++)
-      ;
+    for (i = 0; i < nColors && c != colors[i]; i++) {
+    }
     if (c && i == nColors) {
-      if (i < M)
+      if (i < M) {
         colors[nColors++] = c;
-      else
+      } else {
         c = 0;
+      }
     }
     res[k] = c ? i : -1;
   }

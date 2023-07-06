@@ -69,9 +69,9 @@ unsigned char* readPPM(const char* filename, int& W, int& H) {
     return NULL;
   }
   unsigned char* r = new unsigned char[W * H * 3];
-  if (n == '6')
+  if (n == '6') {
     fread(r, 1, W * H * 3, fp);
-  else if (n == '3') {
+  } else if (n == '3') {
     int c;
     for (int i = 0; i < W * H * 3; i++) {
       fscanf(fp, "%d", &c);

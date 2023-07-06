@@ -42,7 +42,7 @@ class Permutohedral {
  protected:
   struct Neighbors {
     int n1, n2;
-    Neighbors(int n1 = 0, int n2 = 0) : n1(n1), n2(n2) {}
+    explicit Neighbors(int n1 = 0, int n2 = 0) : n1(n1), n2(n2) {}
   };
   std::vector<int> offset_, rank_;
   std::vector<float> barycentric_;

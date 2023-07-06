@@ -70,9 +70,9 @@ int main() {
   MatrixXf a = MatrixXf::Random(M, N), b = MatrixXf::Random(M, N);
   MatrixXf p;
   PermutohedralEnergy e(f.array(), a, b);
-  if (!p.cols() || !p.rows())
+  if (!p.cols() || !p.rows()) {
     p = e.initialValue();
-  else {
+  } else {
     p.array() += 0.1;
     e.setInitialValue(p);
   }

@@ -48,7 +48,7 @@ class LogLikelihood : public ObjectiveFunction {
  public:
   // Give a ground_truth labeling of size N, optional use a robustness term
   // robust>0
-  LogLikelihood(const VectorXs& gt, float robust = 0);
+  explicit LogLikelihood(const VectorXs& gt, float robust = 0);
   // The objective value is sum_i log( Q_i( ground_truth_i ) + robust )
   virtual double evaluate(MatrixXf& d_mul_Q, const MatrixXf& Q) const;
 };
@@ -61,7 +61,7 @@ class Hamming : public ObjectiveFunction {
  public:
   // Give a ground_truth labeling of size N, reweight classes to cope with an
   // invariance weight by w_c = pow( #labels_c, -class_weight_pow )
-  Hamming(const VectorXs& gt, float class_weight_pow = 0);
+  explicit Hamming(const VectorXs& gt, float class_weight_pow = 0);
   Hamming(const VectorXs& gt, const VectorXf& class_weight);
   // The objective value is sum_i Q_i( ground_truth_i )
   virtual double evaluate(MatrixXf& d_mul_Q, const MatrixXf& Q) const;
@@ -73,7 +73,7 @@ class IntersectionOverUnion : public ObjectiveFunction {
 
  public:
   // Give a ground_truth labeling of size N
-  IntersectionOverUnion(const VectorXs& gt);
+  explicit IntersectionOverUnion(const VectorXs& gt);
   // The objective value is sum_l ( sum_i [ground_truth_i == l] Q_i( l ) ) / (
   // |ground_truth_i == l| + sum_i [ground_truth_i != l] Q_i( l ) )
   virtual double evaluate(MatrixXf& d_mul_Q, const MatrixXf& Q) const;

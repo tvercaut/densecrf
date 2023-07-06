@@ -50,9 +50,11 @@ double LogLikelihood::evaluate(MatrixXf& d_mul_Q, const MatrixXf& Q) const {
 }
 Hamming::Hamming(const VectorXs& gt, float class_weight_pow) : gt_(gt) {
   int M = 0, N = gt.rows();
-  ;
-  for (int i = 0; i < N; i++)
-    if (gt[i] >= M) M = gt[i] + 1;
+  for (int i = 0; i < N; i++) {
+    if (gt[i] >= M) {
+      M = gt[i] + 1;
+    }
+  }
   VectorXf cnt = VectorXf::Zero(M);
   for (int i = 0; i < N; i++)
     if (gt[i] >= 0) cnt[gt[i]] += 1;

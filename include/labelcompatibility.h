@@ -51,7 +51,7 @@ class PottsCompatibility : public LabelCompatibility {
   float w_;
 
  public:
-  PottsCompatibility(float weight = 1.0);
+  explicit PottsCompatibility(float weight = 1.0);
   virtual void apply(MatrixXf& out_values, const MatrixXf& in_values) const;
 
   // Training and parameters
@@ -65,7 +65,7 @@ class DiagonalCompatibility : public LabelCompatibility {
   VectorXf w_;
 
  public:
-  DiagonalCompatibility(const VectorXf& v);
+  explicit DiagonalCompatibility(const VectorXf& v);
   virtual void apply(MatrixXf& out_values, const MatrixXf& in_values) const;
 
   // Training and parameters
@@ -80,7 +80,7 @@ class MatrixCompatibility : public LabelCompatibility {
   MatrixXf w_;
 
  public:
-  MatrixCompatibility(const MatrixXf& m);
+  explicit MatrixCompatibility(const MatrixXf& m);
   virtual void apply(MatrixXf& out_values, const MatrixXf& in_values) const;
   virtual void applyTranspose(MatrixXf& out_values,
                               const MatrixXf& in_values) const;
