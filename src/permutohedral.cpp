@@ -263,7 +263,7 @@ void Permutohedral::init(const MatrixXf& feature) {
           key[i] =
               frem0[i * blocksize + j] +
             canonical[remainder * (d_ + 1)
-                      + static_cast<int>(frank[i * blocksize + j]]);
+                      + static_cast<int>(frank[i * blocksize + j])];
         }
         offset_[(j + k) * (d_ + 1) + remainder] = hash_table.find(key, true);
         rank_[(j + k) * (d_ + 1) + remainder] =

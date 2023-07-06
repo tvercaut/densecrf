@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
 
   for (int j = 0; j < logistic_transform.cols(); j++)
     for (int i = 0; i < logistic_transform.rows(); i++)
-      logistic_transform(i, j) = 0.01 * (1 - 2. * random() / RAND_MAX);
+      logistic_transform(i, j) = 0.01 * (1 - 2. * rand() / RAND_MAX);
 
   // Setup the CRF model
   DenseCRF2D crf(W, H, M);
