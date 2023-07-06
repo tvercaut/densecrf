@@ -27,10 +27,6 @@
 
 #include "permutohedral.h"
 
-#ifdef WIN32
-inline int round(double X) { return int(X + .5); }
-#endif
-
 #ifdef __SSE__
 // SSE Permutoheral lattice
 #define SSE_PERMUTOHEDRAL
